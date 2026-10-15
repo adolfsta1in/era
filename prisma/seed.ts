@@ -6,12 +6,12 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { clinicDefaults } from "../src/config/clinic";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { withLibpqSsl } from "../src/lib/pg-url";
+import { databaseUrl, withLibpqSsl } from "../src/lib/pg-url";
 import { cellStarts } from "../src/lib/slots/cells";
 import { addDays, hhmmToMinutes, toDateKey, weekdayOf, zonedToUtc } from "../src/lib/time";
 import { beforeAfterCases, categories, doctors, faqs, reviews, services } from "./seed-data";
 
-const url = process.env.DATABASE_URL!;
+const url = databaseUrl()!;
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: withLibpqSsl(url), max: Number(process.env.DATABASE_POOL_MAX) || undefined }),
 });

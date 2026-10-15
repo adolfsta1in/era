@@ -10,7 +10,15 @@ REST API Supabase к ним доступа не имеет; сайт ходит 
 
 Фото, загруженные в админке (врачи, логотип, «До и после»), — в **Vercel Blob**.
 
-## 1. Строки подключения из Supabase
+## 1. Подключить базу к Vercel
+
+**Проще всего — интеграция (пароль копировать не нужно):** Supabase → проект **MySkin** →
+Project Settings → **Integrations → Vercel** → Connect → выбрать Vercel-проект **era**. Интеграция сама
+пропишет в Vercel `POSTGRES_PRISMA_URL` (для сайта) и `POSTGRES_URL_NON_POOLING` (для миграций) —
+код их понимает. После этого — Redeploy.
+
+**Или вручную** — строки подключения:
+
 
 Supabase → проект **MySkin** → кнопка **Connect** (вверху) → вкладка **ORMs → Prisma** или **Connection string**.
 Нужны две строки с паролем базы (Database password; если забыли — Project Settings → Database → Reset password):

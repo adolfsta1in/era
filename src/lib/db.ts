@@ -1,11 +1,11 @@
 import "server-only";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
-import { withLibpqSsl } from "./pg-url";
+import { databaseUrl, withLibpqSsl } from "./pg-url";
 
 function createClient() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL не задан");
+  const url = databaseUrl();
+  if (!url) throw new Error("DATABASE_URL не задан (или подключите интеграцию Supabase в Vercel)");
   const adapter = new PrismaPg({
     connectionString: withLibpqSsl(url),
     // DATABASE_POOL_MAX=1 — для локального `prisma dev` (PGlite держит одно соединение); на Vercel не нужен.

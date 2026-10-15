@@ -9,6 +9,11 @@ export default defineConfig({
   },
   datasource: {
     // Миграции — через session pooler Supabase (DATABASE_URL_UNPOOLED), сайт — через transaction pooler (DATABASE_URL).
-    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
+    // POSTGRES_URL_NON_POOLING / POSTGRES_PRISMA_URL — те же строки от интеграции Supabase ↔ Vercel.
+    url:
+      process.env["DATABASE_URL_UNPOOLED"] ??
+      process.env["POSTGRES_URL_NON_POOLING"] ??
+      process.env["DATABASE_URL"] ??
+      process.env["POSTGRES_PRISMA_URL"],
   },
 });
