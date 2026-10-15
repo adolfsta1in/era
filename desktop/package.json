@@ -1,0 +1,49 @@
+{
+  "name": "era-admin",
+  "productName": "ERA Admin",
+  "version": "1.0.0",
+  "description": "ERA Premium Dental Clinic — админка как программа для Windows",
+  "author": "ERA Premium Dental Clinic",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "build": {
+    "appId": "kg.era.admin",
+    "productName": "ERA Admin",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "offline.html",
+      "build/icon.png"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "ERA Админка",
+      "artifactName": "ERA-Admin-Setup-${version}.${ext}"
+    },
+    "toolsets": {
+      "nsis": "1.2.1"
+    }
+  },
+  "devDependencies": {
+    "electron": "^38.8.6",
+    "electron-builder": "^26.15.3"
+  },
+  "allowScripts": {
+    "electron@38.8.6": true,
+    "electron-winstaller": false
+  }
+}

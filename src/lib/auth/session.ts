@@ -2,7 +2,7 @@ import "server-only";
 import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_COOKIE, SESSION_MAX_AGE, signSession, verifySession } from "./token";
+import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS, signSession, verifySession } from "./token";
 
 export async function isAdmin(): Promise<boolean> {
   const store = await cookies();
@@ -24,13 +24,7 @@ export function checkPassword(input: string): boolean {
 
 export async function startSession() {
   const store = await cookies();
-  store.set(SESSION_COOKIE, await signSession(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_MAX_AGE,
-  });
+  store.set(SESSION_COOKIE, await signSession(), SESSION_COOKIE_OPTIONS);
 }
 
 export async function endSession() {

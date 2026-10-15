@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
-import { SESSION_COOKIE, verifySession } from "./lib/auth/token";
+import { readSession, SESSION_COOKIE, SESSION_COOKIE_OPTIONS, SESSION_RENEW_AFTER, signSession } from "./lib/auth/token";
 
 const intl = createMiddleware(routing);
 
@@ -11,14 +11,19 @@ export default async function proxy(request: NextRequest) {
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     // Оптимистичная проверка: окончательная проверка сессии — в layout админки и в server actions.
     if (pathname === "/admin/login") return NextResponse.next();
-    const ok = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
-    if (!ok) {
+    const session = await readSession(request.cookies.get(SESSION_COOKIE)?.value);
+    if (!session) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       url.search = pathname === "/admin" ? "" : `?next=${encodeURIComponent(pathname)}`;
       return NextResponse.redirect(url);
     }
-    return NextResponse.next();
+    const response = NextResponse.next();
+    // Скользящая сессия: раз в сутки выдаём новую cookie на 60 дней — пароль не спрашивается снова.
+    if (Date.now() / 1000 - session.iat > SESSION_RENEW_AFTER) {
+      response.cookies.set(SESSION_COOKIE, await signSession(), SESSION_COOKIE_OPTIONS);
+    }
+    return response;
   }
 
   return intl(request);
