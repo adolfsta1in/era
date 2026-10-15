@@ -1,46 +1,48 @@
 # Деплой ERA на Vercel
 
-Записи, врачи, услуги, отзывы и «До и после» хранятся в **PostgreSQL на Neon** (бесплатный тариф,
-подключается к Vercel в один клик). Фото, загруженные в админке, — в **Vercel Blob**.
-Supabase больше не нужен.
+Данные (записи, врачи, услуги, отзывы, «До и после») хранятся в **Supabase**, проект **MySkin**
+(`njttayqtrvbtdbawfenh`, регион Seoul `ap-northeast-2`). ⚠ Не путать с **MySkin EU** — он для другого.
 
-## 1. Проект в Vercel
+Схема и данные клиники в MySkin уже залиты (15.10.2026): настройки, 31 услуга, врач, отзывы, FAQ,
+3 работы «До и после». Миграция `20261015120613_init` отмечена применённой, поэтому
+`prisma migrate deploy` на Vercel её пропустит. На всех таблицах включён RLS без политик — публичный
+REST API Supabase к ним доступа не имеет; сайт ходит в базу напрямую через Prisma.
 
-1. https://vercel.com/new → Import репозитория `adolfsta1in/era`. Framework определится сам (Next.js),
-   регион функций задан в `vercel.json` — `fra1` (Франкфурт, ближе всего к Бишкеку).
-2. Пока не жмите Deploy — сначала база (шаг 2), иначе первая сборка упадёт без `DATABASE_URL`.
+Фото, загруженные в админке (врачи, логотип, «До и после»), — в **Vercel Blob**.
 
-## 2. База: Neon
+## 1. Строки подключения из Supabase
 
-1. В проекте Vercel: **Storage → Create Database → Neon** (Serverless Postgres), регион
-   **Europe Central (Frankfurt)**, план Free.
-2. Подключить к проекту для Production / Preview / Development. Vercel сам добавит переменные
-   `DATABASE_URL` (через пул) и `DATABASE_URL_UNPOOLED` (прямое — для миграций).
+Supabase → проект **MySkin** → кнопка **Connect** (вверху) → вкладка **ORMs → Prisma** или **Connection string**.
+Нужны две строки с паролем базы (Database password; если забыли — Project Settings → Database → Reset password):
 
-Что происходит при каждом деплое (`npm run vercel-build`):
-- `prisma migrate deploy` — применяет новые миграции из `prisma/migrations`;
-- seed с `SEED_IF_EMPTY=1` — заливает данные клиники **только в пустую базу** (первый деплой).
-  Повторные деплои данные не трогают;
-- `next build`.
+| Переменная в Vercel | Какая строка | Пример |
+| --- | --- | --- |
+| `DATABASE_URL` | **Transaction pooler**, порт **6543** — для сайта | `postgresql://postgres.njttayqtrvbtdbawfenh:ПАРОЛЬ@aws-…-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require` |
+| `DATABASE_URL_UNPOOLED` | **Session pooler**, порт **5432** — для миграций | `postgresql://postgres.njttayqtrvbtdbawfenh:ПАРОЛЬ@aws-…-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require` |
 
-## 3. Фото: Vercel Blob
+Хост пулера (`aws-0-…` или `aws-1-…`) копируйте из Supabase как есть. Прямое подключение
+`db.njttayqtrvbtdbawfenh.supabase.co` не подходит: оно только по IPv6, а Vercel ходит по IPv4.
 
-**Storage → Create → Blob** → подключить к проекту. Появится `BLOB_READ_WRITE_TOKEN` — без него
-загрузка фото врачей, логотипа и «До и после» в админке на Vercel работать не будет
-(файловая система там только для чтения).
+## 2. Проект в Vercel
 
-## 4. Остальные переменные (Settings → Environment Variables)
+1. https://vercel.com/new → Import `adolfsta1in/era`. Регион функций — `icn1` (Сеул, рядом с базой), задан в `vercel.json`.
+2. **Storage → Create → Blob** → подключить к проекту (появится `BLOB_READ_WRITE_TOKEN`).
+3. **Settings → Environment Variables**:
 
 | Переменная | Значение |
 | --- | --- |
-| `SITE_URL` | адрес сайта без слэша, например `https://era.vercel.app` или свой домен |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | из шага 1 |
+| `SITE_URL` | адрес сайта без слэша, например `https://era.vercel.app` |
 | `ADMIN_PASSWORD` | пароль админки — **сложный**, не `admin123` |
-| `SESSION_SECRET` | случайная строка от 32 символов: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `SESSION_SECRET` | случайная строка: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | по желанию — уведомления о записях (см. README) |
 
 `DATABASE_POOL_MAX` на Vercel **не задавать** — он только для локальной разработки.
 
-Дальше — Deploy. После деплоя проверить: главная, `/booking` (тестовая запись), `/admin`.
+4. Deploy. Сборка (`npm run vercel-build`): `prisma migrate deploy` → seed только если база пустая
+(в MySkin уже есть данные — пропустится) → `next build`.
+
+Проверить после деплоя: главная, `/booking` (тестовая запись → видна в `/admin`), загрузка фото в «До и после».
 
 ## Локальная разработка
 
@@ -52,13 +54,6 @@ SEED_DEMO=false npm run db:seed # ⚠ стирает всё в этой базе
 npm run dev
 ```
 
-Можно вместо `prisma dev` использовать отдельную ветку Neon для разработки. **Не запускайте
-`npm run db:seed` с продовым `DATABASE_URL`** — он удалит все записи пациентов.
+**Никогда не запускайте `npm run db:seed` со строкой Supabase** — он удалит все записи пациентов.
 
-## Альтернативы Neon
-
-- **Prisma Postgres** (тоже есть в Vercel Storage, бесплатный тариф) — подключается так же, код менять не нужно.
-- **Свой VPS с PostgreSQL** — если нужен полный контроль; строку подключения кладёте в `DATABASE_URL`.
-
-Важно: тариф Vercel **Hobby** официально только для некоммерческих проектов. Для сайта клиники
-правильнее тариф **Pro** (или другой хостинг для Next.js).
+Тариф Vercel **Hobby** официально только для некоммерческих проектов; для сайта клиники правильнее **Pro**.

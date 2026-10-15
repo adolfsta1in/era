@@ -1,5 +1,5 @@
 // Схема БД демо-шаблона стоматологии.
-// PostgreSQL: в продакшене — Neon (через Vercel), локально — `npx prisma dev` или та же Neon-база (см. docs/DEPLOY.md).
+// PostgreSQL: в продакшене — Supabase (проект MySkin), локально — `npx prisma dev` (см. docs/DEPLOY.md).
 // Локализованные тексты хранятся в Json вида { "ru": "...", "ky": "..." }.
 
 generator client {

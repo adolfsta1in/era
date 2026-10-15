@@ -8,7 +8,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    // Миграции — через прямое подключение (Neon на Vercel даёт DATABASE_URL_UNPOOLED), сайт — через пул.
+    // Миграции — через session pooler Supabase (DATABASE_URL_UNPOOLED), сайт — через transaction pooler (DATABASE_URL).
     url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
   },
 });
