@@ -4,13 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { WhatsAppIcon } from "@/components/icons";
 import { DeleteAppointmentButton } from "@/components/admin/appointments/delete-button";
+import { RescheduleForm } from "@/components/admin/appointments/reschedule-form";
 import { StatusSelect } from "@/components/admin/appointments/status-select";
 import { Button } from "@/components/ui/button";
 import { appointmentInclude } from "@/lib/admin/appointments";
 import { db } from "@/lib/db";
 import { formatNumber, whatsappHref } from "@/lib/format";
 import { tr } from "@/lib/localized";
-import { formatDateLong, formatDateShort, formatTime } from "@/lib/time";
+import { formatDateLong, formatDateShort, formatTime, toDateKey } from "@/lib/time";
 import { formatKgPhone } from "@/lib/validators/phone";
 
 export const metadata: Metadata = { title: "Запись" };
@@ -19,6 +20,21 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
   const { id } = await params;
   const a = await db.appointment.findUnique({ where: { id }, include: appointmentInclude });
   if (!a) notFound();
+  const canReschedule = a.status === "NEW" || a.status === "CONFIRMED";
+  const serviceDoctors = canReschedule
+    ? await db.doctorService.findMany({
+        where: { serviceId: a.serviceId, doctor: { isActive: true } },
+        select: { doctor: { select: { id: true, name: true, sortOrder: true } } },
+      })
+    : [];
+  const doctorOptions = serviceDoctors
+    .map((d) => d.doctor)
+    .sort((x, y) => x.sortOrder - y.sortOrder)
+    .map((d) => ({ id: d.id, name: tr(d.name, "ru") }));
+  // Текущий врач должен быть в списке, даже если его потом отвязали от услуги.
+  if (canReschedule && !doctorOptions.some((d) => d.id === a.doctorId)) {
+    doctorOptions.unshift({ id: a.doctorId, name: tr(a.doctor.name, "ru") });
+  }
 
   const rows: [string, React.ReactNode][] = [
     ["Дата", <span key="d" className="first-letter:uppercase">{formatDateLong(a.startAt, "ru")}</span>],
@@ -68,6 +84,17 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
               <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp
             </a>
           </Button>
+          {canReschedule && (
+            <RescheduleForm
+              key={`${a.startAt.toISOString()}-${a.doctorId}`}
+              appointmentId={a.id}
+              serviceId={a.serviceId}
+              doctorId={a.doctorId}
+              date={toDateKey(a.startAt)}
+              today={toDateKey(new Date())}
+              doctors={doctorOptions}
+            />
+          )}
           <div className="ml-auto">
             <DeleteAppointmentButton id={a.id} />
           </div>

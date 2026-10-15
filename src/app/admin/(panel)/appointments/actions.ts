@@ -5,6 +5,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { isStatus, OCCUPYING } from "@/lib/appointment-status";
 import { requireAdmin } from "@/lib/auth/session";
 import { createAppointment, type BookingResult } from "@/lib/booking/create";
+import { rescheduleAppointment as reschedule, type RescheduleResult } from "@/lib/booking/reschedule";
 import { TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { cellStarts } from "@/lib/slots/cells";
@@ -74,5 +75,16 @@ export async function adminCreateAppointment(input: {
     { source: "admin", trusted: true, status: input.status },
   );
   if (result.ok) revalidatePath("/admin", "layout");
+  return result;
+}
+
+/** Перенос записи на другое время / к другому врачу той же услуги. */
+export async function rescheduleAppointment(input: { id: string; start: string; doctorId?: string }): Promise<RescheduleResult> {
+  await requireAdmin();
+  const result = await reschedule(input);
+  if (result.ok) {
+    updateTag(TAGS.schedule);
+    revalidatePath("/admin", "layout");
+  }
   return result;
 }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PageTitle } from "@/components/admin/page-title";
 import { SettingsForm } from "@/components/admin/settings/settings-form";
 import { getClinic } from "@/lib/settings";
-import { telegramEnabled } from "@/lib/telegram";
 
 export const metadata: Metadata = { title: "Настройки" };
 
@@ -11,7 +10,7 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-4xl">
       <PageTitle title="Настройки клиники" description="Всё, что видят пациенты: название, контакты, часы работы, цвета." />
-      <SettingsForm clinic={clinic} telegram={telegramEnabled()} />
+      <SettingsForm clinic={clinic} />
     </div>
   );
 }

@@ -69,7 +69,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps<"/adm
     <>
       <PageTitle
         title="Записи"
-        description="Новые записи с сайта приходят сюда и в Telegram."
+        description="Новые записи с сайта приходят сюда."
         actions={
           <Button asChild>
             <Link href="/admin/appointments/new">

@@ -43,7 +43,6 @@ Supabase → проект **MySkin** → кнопка **Connect** (вверху)
 | `SITE_URL` | адрес сайта без слэша, например `https://era.vercel.app` |
 | `ADMIN_PASSWORD` | пароль админки — **сложный**, не `admin123` |
 | `SESSION_SECRET` | случайная строка: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | по желанию — уведомления о записях (см. README) |
 
 `DATABASE_POOL_MAX` на Vercel **не задавать** — он только для локальной разработки.
 

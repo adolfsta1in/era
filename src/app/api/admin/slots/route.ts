@@ -3,7 +3,10 @@ import { isAdmin } from "@/lib/auth/session";
 import { dateParam, resolveServiceAndDoctor } from "@/lib/booking/query";
 import { findSlots } from "@/lib/slots/service";
 
-/** Слоты для записи из админки: без минимального отступа, горизонт до 90 дней. */
+/**
+ * Слоты для записи из админки: без минимального отступа, горизонт до 90 дней.
+ * exclude=<id записи> — для переноса: время самой записи считается свободным.
+ */
 export async function GET(request: NextRequest) {
   if (!(await isAdmin())) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   const params = request.nextUrl.searchParams;
@@ -18,6 +21,7 @@ export async function GET(request: NextRequest) {
     from: date,
     to: date,
     ignoreLead: true,
+    excludeAppointmentId: params.get("exclude") ?? undefined,
   });
   return NextResponse.json(
     { slots: slots.map((s) => ({ start: s.start.toISOString(), end: s.end.toISOString(), doctorIds: s.doctorIds })) },

@@ -9,7 +9,6 @@ import { requireAdmin } from "@/lib/auth/session";
 import { TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { saveImage, UploadError } from "@/lib/storage";
-import { sendTelegram, telegramEnabled } from "@/lib/telegram";
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -103,11 +102,4 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
   updateTag(TAGS.schedule);
   revalidatePath("/", "layout");
   return { ok: true, message: "Настройки сохранены — сайт уже обновлён" };
-}
-
-export async function sendTelegramTest(): Promise<FormState> {
-  await requireAdmin();
-  if (!telegramEnabled()) return { message: "Telegram не настроен: нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID" };
-  await sendTelegram(["✅ Тестовое сообщение: уведомления о записях настроены."]);
-  return { ok: true, message: "Сообщение отправлено — проверьте чат" };
 }

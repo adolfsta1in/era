@@ -1,22 +1,18 @@
 import "server-only";
 import { randomInt } from "node:crypto";
 import { revalidateTag } from "next/cache";
-import { after } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
 import type { LocalizedText } from "@/config/clinic";
 import { TAGS } from "../cache-tags";
 import { db } from "../db";
-import { asLocalized, tr } from "../localized";
+import { asLocalized } from "../localized";
 import { clientIp, rateLimit } from "../rate-limit";
-import { getClinic } from "../settings";
 import { cellStarts } from "../slots/cells";
 import { isSlotAvailable, pickLeastLoadedDoctor } from "../slots/engine";
 import { ACTIVE_STATUSES, doctorsForService, findSlots, getBookingSettings, loadAvailability } from "../slots/service";
-import { sendTelegram, escapeHtml } from "../telegram";
-import { addDays, formatDateLong, formatTime, toDateKey, zonedToUtc } from "../time";
-import { siteUrl } from "../site";
+import { addDays, toDateKey, zonedToUtc } from "../time";
 import { bookingSchema } from "../validators/booking";
-import { formatKgPhone, normalizeKgPhone } from "../validators/phone";
+import { normalizeKgPhone } from "../validators/phone";
 
 export type BookingConfirmation = {
   code: string;
@@ -154,7 +150,6 @@ export async function createAppointment(raw: unknown, opts: Options): Promise<Bo
       });
 
       revalidateTag(TAGS.schedule, "max");
-      after(() => notifyClinic(appointment.id));
 
       return {
         ok: true,
@@ -190,31 +185,4 @@ export async function createAppointment(raw: unknown, opts: Options): Promise<Bo
     error: "SLOT_TAKEN",
     alternatives: slots.slice(0, 6).map((s) => ({ start: s.start.toISOString(), doctorIds: s.doctorIds })),
   };
-}
-
-const STATUS_LABEL: Record<string, string> = { NEW: "новая", CONFIRMED: "подтверждена" };
-
-async function notifyClinic(appointmentId: string) {
-  const a = await db.appointment.findUnique({
-    where: { id: appointmentId },
-    include: { service: true, doctor: true },
-  });
-  if (!a) return;
-  const clinic = await getClinic();
-  await sendTelegram([
-    `🦷 <b>Новая запись</b> · ${escapeHtml(clinic.name)}`,
-    "",
-    `<b>Услуга:</b> ${escapeHtml(tr(a.service.name, "ru"))}`,
-    `<b>Врач:</b> ${escapeHtml(tr(a.doctor.name, "ru"))}`,
-    `<b>Когда:</b> ${formatDateLong(a.startAt, "ru")}, ${formatTime(a.startAt)}–${formatTime(a.endAt)}`,
-    `<b>Пациент:</b> ${escapeHtml(a.patientName)}`,
-    `<b>Телефон:</b> <a href="tel:${a.patientPhone}">${formatKgPhone(a.patientPhone)}</a>`,
-    ...(a.comment ? [`<b>Комментарий:</b> ${escapeHtml(a.comment)}`] : []),
-    `<b>Статус:</b> ${STATUS_LABEL[a.status] ?? a.status} · ${a.source === "admin" ? "админка" : "сайт"} · № ${a.publicCode}`,
-    "",
-    // Telegram не принимает ссылки на localhost в разметке — на локалке выводим адрес текстом.
-    siteUrl().includes("localhost")
-      ? `Админка: ${siteUrl()}/admin/appointments?id=${a.id}`
-      : `<a href="${siteUrl()}/admin/appointments?id=${a.id}">Открыть в админке →</a>`,
-  ]);
 }

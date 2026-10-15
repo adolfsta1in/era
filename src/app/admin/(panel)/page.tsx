@@ -1,4 +1,4 @@
-import { ArrowRight, BellRing, CalendarCheck, CalendarDays, Plus, Send } from "lucide-react";
+import { ArrowRight, BellRing, CalendarCheck, CalendarDays, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StatusBadge } from "@/components/admin/appointments/status-badge";
@@ -8,7 +8,6 @@ import { appointmentInclude, todayKey } from "@/lib/admin/appointments";
 import { OCCUPYING } from "@/lib/appointment-status";
 import { db } from "@/lib/db";
 import { tr } from "@/lib/localized";
-import { telegramEnabled } from "@/lib/telegram";
 import { addDays, formatDateLong, formatTime, toDateKey, zonedToUtc } from "@/lib/time";
 import { formatKgPhone } from "@/lib/validators/phone";
 
@@ -74,16 +73,6 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
-
-      {!telegramEnabled() && (
-        <div className="mt-4 flex items-start gap-3 rounded-2xl border border-dashed bg-card p-4 text-sm text-muted-foreground">
-          <Send className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-          <p>
-            Уведомления в Telegram выключены. Укажите <code className="rounded bg-muted px-1">TELEGRAM_BOT_TOKEN</code> и{" "}
-            <code className="rounded bg-muted px-1">TELEGRAM_CHAT_ID</code> в .env — инструкция в README.
-          </p>
-        </div>
-      )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <section aria-labelledby="upcoming" className="rounded-3xl border bg-card">

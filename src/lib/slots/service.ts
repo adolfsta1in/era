@@ -25,12 +25,16 @@ export async function getBookingSettings() {
   };
 }
 
-/** Загружает график, исключения и занятость врачей на диапазон дат. */
+/**
+ * Загружает график, исключения и занятость врачей на диапазон дат.
+ * excludeAppointmentId — не считать занятым время этой записи (перенос записи в админке).
+ */
 export async function loadAvailability(
   doctorIds: string[],
   from: DateKey,
   to: DateKey,
   client: Tx = db,
+  excludeAppointmentId?: string,
 ): Promise<DoctorAvailability[]> {
   if (doctorIds.length === 0) return [];
   // Запас в сутки с каждой стороны — чтобы не потерять записи на границе дат.
@@ -46,6 +50,7 @@ export async function loadAvailability(
         status: { in: [...ACTIVE_STATUSES] },
         startAt: { lt: rangeEnd },
         endAt: { gt: rangeStart },
+        ...(excludeAppointmentId ? { id: { not: excludeAppointmentId } } : {}),
       },
       select: { doctorId: true, startAt: true, endAt: true },
     }),
@@ -82,6 +87,8 @@ export type FindSlotsInput = {
   now?: Date;
   /** Для админки: не учитывать минимальный отступ от текущего момента. */
   ignoreLead?: boolean;
+  /** Перенос записи: её собственное время не считается занятым. */
+  excludeAppointmentId?: string;
 };
 
 /** Свободные слоты по услуге и врачу (или по всем врачам услуги). */
@@ -95,7 +102,7 @@ export async function findSlots(input: FindSlotsInput): Promise<MergedSlot[]> {
 
   const candidates = await doctorsForService(input.serviceId);
   const doctorIds = input.doctorId ? candidates.filter((id) => id === input.doctorId) : candidates;
-  const availability = await loadAvailability(doctorIds, from, to);
+  const availability = await loadAvailability(doctorIds, from, to, db, input.excludeAppointmentId);
 
   return computeMergedSlots(availability, {
     durationMin: input.durationMin,

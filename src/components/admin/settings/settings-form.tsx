@@ -1,11 +1,9 @@
 "use client";
 
-import { Check, Send } from "lucide-react";
-import { useActionState, useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
-import { saveSettings, sendTelegramTest } from "@/app/admin/(panel)/settings/actions";
+import { Check } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
+import { saveSettings } from "@/app/admin/(panel)/settings/actions";
 import { LogoMark } from "@/components/site/logo";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { ClinicConfig } from "@/config/clinic";
@@ -24,13 +22,12 @@ const DAYS = [
   ["0", "Воскресенье"],
 ] as const;
 
-export function SettingsForm({ clinic, telegram }: { clinic: ClinicConfig; telegram: boolean }) {
+export function SettingsForm({ clinic }: { clinic: ClinicConfig }) {
   const [state, action] = useActionState<FormState, FormData>(saveSettings, {});
   useFormToast(state);
   const e = state.errors ?? {};
   const [theme, setTheme] = useState<ThemeId>(clinic.theme);
   const [logoPreview, setLogoPreview] = useState<string | null>(clinic.logoUrl);
-  const [testing, startTest] = useTransition();
 
   // Живое превью: тема сразу применяется к админке, на сайт — после сохранения.
   useEffect(() => {
@@ -251,26 +248,6 @@ export function SettingsForm({ clinic, telegram }: { clinic: ClinicConfig; teleg
               ))}
             </select>
           </Field>
-        </div>
-        <div className="flex flex-col gap-3 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted-foreground">
-            Уведомления в Telegram: <strong className={telegram ? "text-success" : "text-ink"}>{telegram ? "включены" : "выключены"}</strong>
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={testing}
-            onClick={() =>
-              startTest(async () => {
-                const res = await sendTelegramTest();
-                if (res.ok) toast.success(res.message);
-                else toast.error(res.message);
-              })
-            }
-          >
-            <Send /> Проверить отправку
-          </Button>
         </div>
       </Section>
 
