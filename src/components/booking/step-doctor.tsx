@@ -55,7 +55,9 @@ export function StepDoctor({
               <span className="min-w-0">
                 <span className="block font-heading font-bold text-ink">{d.name}</span>
                 <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{d.specialty}</span>
-                <span className="mt-1 block text-xs font-medium text-primary-soft-foreground">{d.experience}</span>
+                {d.experience && (
+                  <span className="mt-1 block text-xs font-medium text-primary-soft-foreground">{d.experience}</span>
+                )}
               </span>
             </span>
           </OptionCard>

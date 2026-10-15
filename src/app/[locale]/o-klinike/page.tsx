@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Benefits } from "@/components/home/benefits";
 import { CtaBand } from "@/components/site/cta-band";
@@ -11,6 +12,18 @@ import { getLocale } from "@/lib/locale";
 import { tr } from "@/lib/localized";
 import { pageAlternates } from "@/lib/seo/metadata";
 import { getClinic } from "@/lib/settings";
+
+/** Фото работ врача (из Instagram клиники). Подписи — about.works в messages, по порядку. */
+const WORK_PHOTOS = [
+  "/works/work-veneers-smile.webp",
+  "/works/work-front-resto.webp",
+  "/works/work-molar-resto.webp",
+  "/works/work-zirconia.webp",
+  "/works/work-crowns-front.webp",
+  "/works/work-total-smile.webp",
+  "/works/work-crowns-lab.webp",
+  "/works/work-denture.webp",
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -32,11 +45,12 @@ export default async function AboutPage() {
   ]);
   const values = ["1", "2", "3"] as const;
   const equipment = t.raw("equipment") as string[];
+  const workTitles = t.raw("works") as string[];
   const stats = [
-    { value: `${yearsSince(clinic.foundedYear)}`, label: th("statYears") },
-    { value: `${formatNumber(clinic.patientsCount)}+`, label: th("statPatients") },
+    clinic.foundedYear > 0 && { value: `${yearsSince(clinic.foundedYear)}`, label: th("statYears") },
+    clinic.patientsCount > 0 && { value: `${formatNumber(clinic.patientsCount)}+`, label: th("statPatients") },
     { value: clinic.rating.toFixed(1).replace(".", ","), label: th("statRating") },
-  ];
+  ].filter((s) => s !== false);
 
   return (
     <>
@@ -89,6 +103,23 @@ export default async function AboutPage() {
             ))}
           </ul>
         </div>
+      </section>
+
+      <section className="container-page py-12" aria-labelledby="works-title">
+        <h2 id="works-title" className="section-title">
+          {t("worksTitle")}
+        </h2>
+        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t("worksLead")}</p>
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {WORK_PHOTOS.map((src, i) => (
+            <Reveal as="li" key={src} className="overflow-hidden rounded-3xl border bg-card">
+              <div className="relative aspect-[4/3]">
+                <Image src={src} alt={workTitles[i] ?? ""} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
+              </div>
+              <p className="px-4 py-3 text-sm leading-snug font-medium text-ink">{workTitles[i]}</p>
+            </Reveal>
+          ))}
+        </ul>
       </section>
 
       <Benefits locale={locale} />

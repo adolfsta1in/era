@@ -27,9 +27,11 @@ export function DoctorCard({ doctor, className, priority }: { doctor: DoctorCard
         <div className="min-w-0">
           <h3 className="text-lg font-bold">{doctor.name}</h3>
           <p className="mt-1 text-sm leading-snug text-muted-foreground">{doctor.specialty}</p>
-          <p className="mt-2 inline-flex rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary-soft-foreground">
-            {doctor.experience}
-          </p>
+          {doctor.experience && (
+            <p className="mt-2 inline-flex rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary-soft-foreground">
+              {doctor.experience}
+            </p>
+          )}
         </div>
         <span className="mt-1 flex size-9 shrink-0 items-center justify-center rounded-full border bg-card text-ink transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
           <ArrowUpRight className="size-4" aria-hidden />

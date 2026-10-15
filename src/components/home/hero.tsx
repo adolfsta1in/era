@@ -1,4 +1,5 @@
-import { CalendarCheck, Phone, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { CalendarCheck, Phone, ShieldCheck, Star } from "lucide-react";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/routing";
@@ -18,10 +19,10 @@ export async function Hero({ clinic, locale }: { clinic: ClinicSettings; locale:
   const phone = clinic.phones[0];
 
   const stats = [
-    { value: `${yearsSince(clinic.foundedYear)}`, label: t("statYears") },
-    { value: `${formatNumber(clinic.patientsCount)}+`, label: t("statPatients") },
+    clinic.foundedYear > 0 && { value: `${yearsSince(clinic.foundedYear)}`, label: t("statYears") },
+    clinic.patientsCount > 0 && { value: `${formatNumber(clinic.patientsCount)}+`, label: t("statPatients") },
     { value: clinic.rating.toFixed(1).replace(".", ","), label: t("statRating"), star: true },
-  ];
+  ].filter((s) => s !== false);
 
   return (
     <section className="relative overflow-hidden">
@@ -80,7 +81,6 @@ export async function Hero({ clinic, locale }: { clinic: ClinicSettings; locale:
           locale={locale}
           labels={{
             sterile: t("badgeSterile"),
-            painless: t("badgePainless"),
             nextSlot: t("nextSlot"),
             nextSlotCta: t("nextSlotCta"),
             today: tc2("today"),
@@ -97,45 +97,24 @@ function HeroVisual({
   labels,
 }: {
   locale: Locale;
-  labels: { sterile: string; painless: string; nextSlot: string; nextSlotCta: string; today: string; tomorrow: string };
+  labels: { sterile: string; nextSlot: string; nextSlotCta: string; today: string; tomorrow: string };
 }) {
   return (
     <div className="relative mx-auto w-full max-w-md lg:max-w-none">
       <div className="relative aspect-[4/4.4] overflow-hidden rounded-[2.25rem] bg-primary-soft sm:aspect-[4/4]">
-        <svg
-          viewBox="0 0 400 420"
-          className="absolute inset-0 size-full"
-          aria-hidden
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <circle cx="330" cy="70" r="120" fill="var(--card)" opacity="0.45" />
-          <circle cx="60" cy="380" r="110" fill="var(--surface)" opacity="0.7" />
-          <g
-            transform="translate(110 70) scale(7.5)"
-            fill="none"
-            stroke="var(--primary)"
-            strokeWidth="0.42"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity="0.9"
-          >
-            <path d="M7.5 3.2c1.6-.5 3 .1 4.5.8 1.5-.7 2.9-1.3 4.5-.8 2.6.8 3.8 3.6 3.1 6.7-.4 1.7-1.2 2.9-1.6 4.6-.5 2.2-.6 4.5-1.6 6.1-.6 1-1.9.9-2.3-.2-.5-1.4-.6-3.6-2.1-3.6s-1.6 2.2-2.1 3.6c-.4 1.1-1.7 1.2-2.3.2-1-1.6-1.1-3.9-1.6-6.1-.4-1.7-1.2-2.9-1.6-4.6-.7-3.1.5-5.9 3.1-6.7Z" />
-            <path d="M9 7.2c1 .1 2 .5 3 1" />
-          </g>
-          <g stroke="var(--primary)" strokeOpacity="0.18" strokeWidth="1">
-            {Array.from({ length: 7 }, (_, i) => (
-              <line key={i} x1="0" x2="400" y1={60 + i * 50} y2={60 + i * 50} strokeDasharray="2 6" />
-            ))}
-          </g>
-        </svg>
+        <Image
+          src="/doctors/aripakhunov-ilyor-full.webp"
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 1024px) 45vw, 100vw"
+          className="object-cover object-[50%_35%]"
+        />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
 
         <div className="absolute top-5 left-5 flex items-center gap-2 rounded-full bg-card/90 px-3.5 py-2 text-xs font-semibold text-ink shadow-soft backdrop-blur sm:top-7 sm:left-7">
           <ShieldCheck className="size-4 text-primary" aria-hidden />
           {labels.sterile}
-        </div>
-        <div className="absolute top-16 right-5 flex items-center gap-2 rounded-full bg-card/90 px-3.5 py-2 text-xs font-semibold text-ink shadow-soft backdrop-blur sm:top-20 sm:right-7">
-          <Sparkles className="size-4 text-accent-foreground" aria-hidden />
-          {labels.painless}
         </div>
       </div>
 

@@ -21,7 +21,8 @@ const schema = z.object({
   lng: z.number().min(-180).max(180),
   twoGisUrl: z.union([z.literal(""), z.url("Некорректная ссылка")]),
   mapEmbedUrl: z.union([z.literal(""), z.url("Некорректная ссылка").refine((u) => u.startsWith("https://"), "Ссылка должна начинаться с https://")]),
-  foundedYear: z.number().int().min(1950).max(2100),
+  // 0 — год неизвестен, блок «лет работаем» на сайте скрыт.
+  foundedYear: z.union([z.literal(0), z.number().int().min(1950).max(2100)]),
   patientsCount: z.number().int().min(0),
   rating: z.number().min(0).max(5),
   bookingLeadMinutes: z.number().int().min(0).max(7 * 24 * 60),

@@ -98,12 +98,12 @@ export async function Footer({ clinic, locale }: { clinic: ClinicSettings; local
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <p>{t("rights", { year, name: clinic.name })}</p>
-          <p>{t("license")}</p>
+          {t("license") && <p>{t("license")}</p>}
           <Link href="/privacy" className="underline-offset-4 hover:text-white hover:underline">
             {t("privacy")}
           </Link>
         </div>
-        <p className="container-page pb-6 text-xs text-white/40">{t("disclaimer")}</p>
+        {t("disclaimer") && <p className="container-page pb-6 text-xs text-white/40">{t("disclaimer")}</p>}
       </div>
     </footer>
   );

@@ -25,7 +25,7 @@ export async function DoctorsSection({ locale }: { locale: Locale }) {
       slug: d.slug,
       name,
       specialty: tr(d.specialty, locale),
-      experience: tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) }),
+      experience: d.experienceSince > 0 ? tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) }) : "",
       photoUrl: d.photoUrl,
       photoAlt: td("photoAlt", { name }),
     };

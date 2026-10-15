@@ -151,3 +151,20 @@ export async function getFaqs(): Promise<FaqDTO[]> {
   const rows = await db.faq.findMany({ orderBy: { sortOrder: "asc" } });
   return rows.map((f) => ({ id: f.id, question: asLocalized(f.question), answer: asLocalized(f.answer) }));
 }
+
+export type BeforeAfterDTO = { id: string; title: LocalizedText; description: LocalizedText; beforeUrl: string; afterUrl: string };
+
+export async function getBeforeAfterCases(): Promise<BeforeAfterDTO[]> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(TAGS.content);
+
+  const rows = await db.beforeAfterCase.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" } });
+  return rows.map((c) => ({
+    id: c.id,
+    title: asLocalized(c.title),
+    description: asLocalized(c.description),
+    beforeUrl: c.beforeUrl,
+    afterUrl: c.afterUrl,
+  }));
+}

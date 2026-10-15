@@ -53,7 +53,16 @@ export default async function PrivacyPage() {
     PHONE: clinic.phones[0] ?? "",
     ADDRESS: tr(clinic.address, locale),
   };
-  const text = template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? `{{${key}}}`);
+  // Пустые ИНН и e-mail убираем из текста вместе с подписью, чтобы не было «ИНН ,» и «e-mail: .».
+  let prepared = template;
+  if (!clinic.legalInn) prepared = prepared.replace(/(ИНН|ИСН) \{\{INN\}\}, /g, "");
+  if (!clinic.email) {
+    prepared = prepared
+      .replace("напишите на {{EMAIL}} или позвоните по телефону {{PHONE}}", "позвоните или напишите в WhatsApp: {{PHONE}}")
+      .replace("{{EMAIL}} дарегине жазыңыз же {{PHONE}} номерине чалыңыз", "{{PHONE}} номерине чалыңыз же WhatsApp аркылуу жазыңыз")
+      .replace(/, e-mail: \{\{EMAIL\}\}/g, "");
+  }
+  const text = prepared.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? `{{${key}}}`);
 
   return (
     <>

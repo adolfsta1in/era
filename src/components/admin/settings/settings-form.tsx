@@ -276,10 +276,10 @@ export function SettingsForm({ clinic, telegram }: { clinic: ClinicConfig; teleg
 
       <Section title="Цифры на сайте">
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Год открытия" htmlFor="foundedYear" error={e.foundedYear}>
+          <Field label="Год открытия (0 — не показывать)" htmlFor="foundedYear" error={e.foundedYear}>
             <Input id="foundedYear" name="foundedYear" type="number" defaultValue={clinic.foundedYear} />
           </Field>
-          <Field label="Пациентов" htmlFor="patientsCount" error={e.patientsCount}>
+          <Field label="Пациентов (0 — не показывать)" htmlFor="patientsCount" error={e.patientsCount}>
             <Input id="patientsCount" name="patientsCount" type="number" min={0} step={100} defaultValue={clinic.patientsCount} />
           </Field>
           <Field label="Рейтинг (из 5)" htmlFor="rating" error={e.rating}>

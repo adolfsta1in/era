@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ExternalLink, LayoutDashboard, LogOut, MessageSquareQuote, Settings, Stethoscope, UsersRound } from "lucide-react";
+import { CalendarDays, ExternalLink, Images, LayoutDashboard, LogOut, MessageSquareQuote, Settings, Stethoscope, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/actions";
@@ -11,6 +11,7 @@ export const ADMIN_NAV = [
   { href: "/admin/appointments", label: "Записи", short: "Записи", Icon: CalendarDays },
   { href: "/admin/doctors", label: "Врачи", short: "Врачи", Icon: UsersRound },
   { href: "/admin/services", label: "Услуги и цены", short: "Услуги", Icon: Stethoscope },
+  { href: "/admin/works", label: "До и после", short: "До/после", Icon: Images },
   { href: "/admin/content", label: "Отзывы и FAQ", short: "Контент", Icon: MessageSquareQuote, desktopOnly: true },
   { href: "/admin/settings", label: "Настройки", short: "Настройки", Icon: Settings },
 ];
@@ -112,7 +113,7 @@ function BottomNavView({ isActive }: { isActive: IsActive }) {
       aria-label="Разделы админки"
       className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {ADMIN_NAV.filter((i) => !i.desktopOnly).map(({ href, short, Icon, exact }) => (
           <li key={href}>
             <Link

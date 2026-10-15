@@ -45,8 +45,8 @@ export function DoctorForm({ doctor }: { doctor?: DoctorFormValues }) {
           }}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Год начала практики" htmlFor="experienceSince" error={e.experienceSince} hint="Стаж на сайте считается автоматически">
-            <Input id="experienceSince" name="experienceSince" type="number" min={1950} max={2100} defaultValue={doctor?.experienceSince ?? 2015} />
+          <Field label="Год начала практики" htmlFor="experienceSince" error={e.experienceSince} hint="Стаж на сайте считается автоматически; 0 — не показывать">
+            <Input id="experienceSince" name="experienceSince" type="number" min={0} max={2100} defaultValue={doctor?.experienceSince ?? 2015} />
           </Field>
           <Field label="Адрес страницы" htmlFor="slug" error={e.slug} hint="Если пусто — из имени: /vrachi/timur-aliev">
             <Input id="slug" name="slug" defaultValue={doctor?.slug} pattern="[a-z0-9-]*" />

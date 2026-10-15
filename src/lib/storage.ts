@@ -12,6 +12,7 @@ const ALLOWED: Record<string, string> = {
 };
 
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+// Фото уменьшаются в браузере перед отправкой (src/lib/admin/compress-image.ts), так что лимит с запасом.
 
 export class UploadError extends Error {}
 
@@ -20,7 +21,7 @@ export class UploadError extends Error {}
  * С BLOB_READ_WRITE_TOKEN — в Vercel Blob (на Vercel файловая система только для чтения),
  * без него — в public/uploads (локальный демо-режим).
  */
-export async function saveImage(file: File, folder: "doctors" | "logo"): Promise<string> {
+export async function saveImage(file: File, folder: "doctors" | "logo" | "works"): Promise<string> {
   const ext = ALLOWED[file.type];
   if (!ext) throw new UploadError("Поддерживаются JPG, PNG, WebP, AVIF и SVG");
   if (file.size > MAX_UPLOAD_BYTES) throw new UploadError("Файл больше 4 МБ");

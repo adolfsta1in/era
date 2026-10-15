@@ -1,4 +1,4 @@
-import { Baby, BadgeCheck, Check, ClipboardList, HeartHandshake, ScanLine, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Check, ClipboardList, HeartHandshake, QrCode, ShieldCheck, Stethoscope } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
@@ -11,9 +11,9 @@ const ITEMS = [
   { key: "plan", Icon: ClipboardList },
   { key: "painless", Icon: HeartHandshake },
   { key: "sterile", Icon: ShieldCheck },
-  { key: "xray", Icon: ScanLine },
+  { key: "xray", Icon: Stethoscope },
   { key: "warranty", Icon: BadgeCheck },
-  { key: "kids", Icon: Baby },
+  { key: "kids", Icon: QrCode },
 ] as const;
 
 export async function Benefits({ locale }: { locale: Locale }) {

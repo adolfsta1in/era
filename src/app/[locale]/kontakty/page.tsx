@@ -33,7 +33,7 @@ export default async function ContactsPage() {
         <div className="mt-6 rounded-3xl border border-dashed p-6 text-sm text-muted-foreground">
           <h2 className="mb-2 font-sans text-xs font-semibold tracking-[0.14em] uppercase">{t("requisites")}</h2>
           <p>
-            {clinic.legalName} · ИНН {clinic.legalInn} · {clinic.email}
+            {[clinic.legalName, clinic.legalInn && `ИНН ${clinic.legalInn}`, clinic.email].filter(Boolean).join(" · ")}
           </p>
         </div>
       </div>

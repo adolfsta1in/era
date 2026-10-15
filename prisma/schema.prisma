@@ -1,5 +1,5 @@
 // Схема БД демо-шаблона стоматологии.
-// Локально — SQLite. Для деплоя смените provider на "postgresql" (см. README).
+// PostgreSQL: в продакшене — Neon (через Vercel), локально — `npx prisma dev` или та же Neon-база (см. docs/DEPLOY.md).
 // Локализованные тексты хранятся в Json вида { "ru": "...", "ky": "..." }.
 
 generator client {
@@ -8,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 /// Настройки клиники. Всегда одна строка с id = 1.
@@ -204,4 +204,17 @@ model RateLimitHit {
   createdAt DateTime @default(now())
 
   @@index([key, createdAt])
+}
+
+/// Кейс «До и после» на главной: врач добавляет его в админке (фото + описание).
+model BeforeAfterCase {
+  id          String   @id @default(cuid())
+  title       Json
+  description Json
+  beforeUrl   String
+  afterUrl    String
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

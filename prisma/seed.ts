@@ -9,7 +9,7 @@ import { clinicDefaults } from "../src/config/clinic";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { cellStarts } from "../src/lib/slots/cells";
 import { addDays, hhmmToMinutes, toDateKey, weekdayOf, zonedToUtc } from "../src/lib/time";
-import { categories, doctors, faqs, reviews, services } from "./seed-data";
+import { beforeAfterCases, categories, doctors, faqs, reviews, services } from "./seed-data";
 
 const url = process.env.DATABASE_URL!;
 const db = new PrismaClient({
@@ -36,6 +36,12 @@ function code(i: number) {
 }
 
 async function main() {
+  // SEED_IF_EMPTY=1 — режим для деплоя (npm run vercel-build): заливаем данные только в пустую базу,
+  // чтобы повторные деплои не стирали реальные записи пациентов.
+  if (process.env.SEED_IF_EMPTY === "1" && (await db.clinicSettings.count()) > 0) {
+    console.log("База уже заполнена — seed пропущен");
+    return;
+  }
   console.log("Очищаю БД…");
   await db.bookedSlot.deleteMany();
   await db.appointment.deleteMany();
@@ -47,6 +53,7 @@ async function main() {
   await db.serviceCategory.deleteMany();
   await db.review.deleteMany();
   await db.faq.deleteMany();
+  await db.beforeAfterCase.deleteMany();
   await db.rateLimitHit.deleteMany();
   await db.clinicSettings.deleteMany();
 
@@ -90,6 +97,7 @@ async function main() {
         bio: d.bio,
         education: d.education,
         experienceSince: d.experienceSince,
+        photoUrl: d.photoUrl ?? null,
         sortOrder: i,
         services: { create: d.services.map((slug) => ({ serviceId: serviceIds.get(slug)!.id })) },
         scheduleRules: {
@@ -210,6 +218,9 @@ async function main() {
     await db.faq.create({ data: { question: f.q, answer: f.a, sortOrder: i } });
   }
 
+  for (const [i, c] of beforeAfterCases.entries()) {
+    await db.beforeAfterCase.create({ data: { ...c, sortOrder: i } });
+  }
   console.log("Готово ✔");
 }
 

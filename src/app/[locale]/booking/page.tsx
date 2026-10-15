@@ -55,7 +55,7 @@ export default async function BookingPage() {
       name: tr(d.name, locale),
       specialty: tr(d.specialty, locale),
       photoUrl: d.photoUrl,
-      experience: tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) }),
+      experience: d.experienceSince > 0 ? tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) }) : "",
     })),
     clinic: {
       name: clinic.name,

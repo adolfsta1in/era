@@ -118,9 +118,11 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/uslug
                           {dn}
                         </Link>
                         <p className="mt-0.5 text-sm text-muted-foreground">{tr(d.specialty, locale)}</p>
-                        <p className="mt-1 text-xs font-medium text-primary-soft-foreground">
-                          {tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) })}
-                        </p>
+                        {d.experienceSince > 0 && (
+                          <p className="mt-1 text-xs font-medium text-primary-soft-foreground">
+                            {tc("experience", { years: tc("years", { count: yearsSince(d.experienceSince) }) })}
+                          </p>
+                        )}
                       </div>
                       <Button asChild size="sm" variant="soft" className="shrink-0">
                         <Link href={`/booking?service=${service.slug}&doctor=${d.slug}`}>{tcta("bookShort")}</Link>

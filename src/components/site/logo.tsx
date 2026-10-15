@@ -16,7 +16,14 @@ export function Logo({
   if (logoUrl) {
     return (
       <span className={cn("flex items-center", className)}>
-        <Image src={logoUrl} alt={name} width={160} height={40} className="h-9 w-auto object-contain" priority />
+        <Image
+          src={logoUrl}
+          alt={name}
+          width={160}
+          height={40}
+          className={cn("h-9 w-auto object-contain", inverted && "brightness-0 invert")}
+          priority
+        />
       </span>
     );
   }
