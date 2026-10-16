@@ -39,6 +39,8 @@ export function NewAppointmentForm({
   const [status, setStatus] = useState<"NEW" | "CONFIRMED">("CONFIRMED");
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Меняется при сбросе: форма пересоздаётся, и поле телефона с маской гарантированно очищается.
+  const [formKey, setFormKey] = useState(0);
 
   const service = services.find((s) => s.id === serviceId);
   const serviceDoctors = service ? doctors.filter((d) => service.doctorIds.includes(d.id)) : [];
@@ -56,6 +58,20 @@ export function NewAppointmentForm({
     return () => controller.abort();
   }, [serviceId, doctorId, date]);
 
+  function resetForm() {
+    setServiceId("");
+    setDoctorId("any");
+    setDate(today);
+    setSlots(null);
+    setStart("");
+    setName("");
+    setPhone("");
+    setComment("");
+    setStatus("CONFIRMED");
+    setErrors({});
+    setFormKey((k) => k + 1);
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const errs: Record<string, string> = {};
@@ -70,6 +86,9 @@ export function NewAppointmentForm({
       const res = await adminCreateAppointment({ serviceId, doctorId, start, name, phone, comment, status });
       if (res.ok) {
         toast.success(`Записано: ${res.booking.code}`);
+        // Next.js (Cache Components) не размонтирует страницу при переходе, а прячет её с сохранённым
+        // состоянием — без сброса следующая «Новая запись» открылась бы с данными этого пациента.
+        resetForm();
         router.push(`/admin/appointments?q=${res.booking.code}`);
       } else if (res.error === "SLOT_TAKEN") {
         toast.error("Это время уже заняли — выберите другое");
@@ -85,7 +104,7 @@ export function NewAppointmentForm({
   const err = (k: string) => errors[k] && <p className="mt-1.5 text-sm text-destructive">{errors[k]}</p>;
 
   return (
-    <form onSubmit={submit} className="grid gap-6 lg:grid-cols-2">
+    <form key={formKey} onSubmit={submit} className="grid gap-6 lg:grid-cols-2">
       <fieldset className="space-y-4 rounded-3xl border bg-card p-5 sm:p-6">
         <legend className="sr-only">Услуга, врач и время</legend>
         <div>
