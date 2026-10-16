@@ -13,6 +13,10 @@ const body = Onest({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variable: "
 export const metadata: Metadata = {
   title: { default: "Админка", template: "%s · Админка" },
   robots: { index: false, follow: false },
+  // Админку можно поставить на экран «Домой» (iPhone/Android) или установить из Chrome — откроется
+  // отдельным приложением с иконкой ERA. Манифест только у админки: сайт для пациентов остаётся сайтом.
+  manifest: "/admin.webmanifest",
+  appleWebApp: { capable: true, title: "ERA Админка", statusBarStyle: "default" },
 };
 
 async function ThemeStyle() {
