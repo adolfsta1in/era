@@ -4,7 +4,7 @@ import { ServicesBrowser } from "@/components/services/services-browser";
 import { CtaBand } from "@/components/site/cta-band";
 import { PageHeader } from "@/components/site/page-header";
 import { getCatalog } from "@/lib/data";
-import { priceLabel } from "@/lib/i18n-format";
+import { servicePrice } from "@/lib/i18n-format";
 import { getLocale } from "@/lib/locale";
 import { tr } from "@/lib/localized";
 import { pageAlternates } from "@/lib/seo/metadata";
@@ -44,7 +44,7 @@ export default async function ServicesPage() {
             name: tr(s.name, locale),
             description: tr(s.shortDescription, locale),
             duration: tc("durationShort", { count: s.durationMin }),
-            price: priceLabel(tc, s.priceFrom),
+            price: servicePrice(tc, s),
             // Поиск работает по обоим языкам.
             search: [s.name.ru, s.name.ky, s.shortDescription.ru, s.shortDescription.ky]
               .join(" ")

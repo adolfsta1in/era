@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { getCatalog } from "@/lib/data";
-import { priceLabel } from "@/lib/i18n-format";
+import { servicePrice } from "@/lib/i18n-format";
 import { tr } from "@/lib/localized";
 
 export async function PopularServices({ locale }: { locale: Locale }) {
@@ -46,7 +46,7 @@ export async function PopularServices({ locale }: { locale: Locale }) {
                 name={tr(s.name, locale)}
                 description={tr(s.shortDescription, locale)}
                 duration={tc("durationShort", { count: s.durationMin })}
-                price={priceLabel(tc, s.priceFrom)}
+                price={servicePrice(tc, s)}
               />
             </Reveal>
           ))}

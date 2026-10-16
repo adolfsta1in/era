@@ -9,7 +9,8 @@ import { StatusSelect } from "@/components/admin/appointments/status-select";
 import { Button } from "@/components/ui/button";
 import { appointmentInclude } from "@/lib/admin/appointments";
 import { db } from "@/lib/db";
-import { formatNumber, whatsappHref } from "@/lib/format";
+import { whatsappHref } from "@/lib/format";
+import { adminPrice } from "@/lib/i18n-format";
 import { tr } from "@/lib/localized";
 import { formatDateLong, formatDateShort, formatTime, toDateKey } from "@/lib/time";
 import { formatKgPhone } from "@/lib/validators/phone";
@@ -39,7 +40,7 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
   const rows: [string, React.ReactNode][] = [
     ["Дата", <span key="d" className="first-letter:uppercase">{formatDateLong(a.startAt, "ru")}</span>],
     ["Время", `${formatTime(a.startAt)}–${formatTime(a.endAt)}`],
-    ["Услуга", `${tr(a.service.name, "ru")} · от ${formatNumber(a.service.priceFrom)} сом`],
+    ["Услуга", `${tr(a.service.name, "ru")} · ${adminPrice(a.service.priceFrom, a.service.currency)}`],
     ["Врач", tr(a.doctor.name, "ru")],
     ["Пациент", a.patientName],
     [

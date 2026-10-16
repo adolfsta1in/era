@@ -63,6 +63,8 @@ model Service {
   durationMin      Int
   priceFrom        Int
   priceTo          Int?
+  /// Валюта цены: KGS (сом, по умолчанию) или USD — для услуг, которые клиника считает в долларах.
+  currency         String          @default("KGS")
   isPopular        Boolean         @default(false)
   isActive         Boolean         @default(true)
   sortOrder        Int             @default(0)

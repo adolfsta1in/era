@@ -10,7 +10,7 @@ import { ServiceRow } from "@/components/site/service-row";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getCatalog, getDoctorBySlug, getDoctors } from "@/lib/data";
-import { priceLabel, yearsSince } from "@/lib/i18n-format";
+import { servicePrice, yearsSince } from "@/lib/i18n-format";
 import { getLocale } from "@/lib/locale";
 import { tr } from "@/lib/localized";
 import { localizedUrl } from "@/lib/seo/jsonld";
@@ -153,7 +153,7 @@ export default async function DoctorPage({ params }: PageProps<"/[locale]/vrachi
                       href={`/uslugi/${s.slug}`}
                       name={tr(s.name, locale)}
                       duration={tc("durationShort", { count: s.durationMin })}
-                      price={priceLabel(tc, s.priceFrom)}
+                      price={servicePrice(tc, s)}
                     />
                   </li>
                 ))}

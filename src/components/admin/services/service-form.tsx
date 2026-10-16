@@ -17,6 +17,7 @@ export type ServiceFormValues = {
   durationMin: number;
   priceFrom: number;
   priceTo: number | null;
+  currency: string;
   isPopular: boolean;
   isActive: boolean;
   doctorIds: string[];
@@ -66,11 +67,22 @@ export function ServiceForm({
       </Section>
 
       <Section title="Цена и длительность">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Цена от, сом" htmlFor="priceFrom" error={e.priceFrom}>
+        <div className="grid gap-4 sm:grid-cols-4">
+          <Field label="Валюта" htmlFor="currency" hint="Обычно сом; доллары — для услуг в $">
+            <select
+              id="currency"
+              name="currency"
+              defaultValue={service?.currency ?? "KGS"}
+              className="h-11 w-full rounded-xl border border-input bg-card px-3 text-sm"
+            >
+              <option value="KGS">сом</option>
+              <option value="USD">доллары ($)</option>
+            </select>
+          </Field>
+          <Field label="Цена от" htmlFor="priceFrom" error={e.priceFrom}>
             <Input id="priceFrom" name="priceFrom" type="number" min={0} step={50} required defaultValue={service?.priceFrom ?? 1000} />
           </Field>
-          <Field label="Цена до, сом" htmlFor="priceTo" error={e.priceTo} hint="Необязательно">
+          <Field label="Цена до" htmlFor="priceTo" error={e.priceTo} hint="Необязательно">
             <Input id="priceTo" name="priceTo" type="number" min={0} step={50} defaultValue={service?.priceTo ?? ""} />
           </Field>
           <Field label="Длительность, мин" htmlFor="durationMin" error={e.durationMin} hint="Влияет на расчёт слотов">

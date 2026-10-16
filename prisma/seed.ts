@@ -78,6 +78,7 @@ async function main() {
         durationMin: s.durationMin,
         priceFrom: s.priceFrom,
         priceTo: s.priceTo ?? null,
+        currency: s.currency ?? "KGS",
         isPopular: s.popular ?? false,
         sortOrder: i,
       },

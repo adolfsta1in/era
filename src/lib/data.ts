@@ -22,6 +22,7 @@ export type ServiceDTO = {
   durationMin: number;
   priceFrom: number;
   priceTo: number | null;
+  currency: string;
   isPopular: boolean;
   doctorIds: string[];
 };
@@ -85,6 +86,7 @@ export async function getCatalog(): Promise<{ categories: CategoryDTO[]; service
         durationMin: s.durationMin,
         priceFrom: s.priceFrom,
         priceTo: s.priceTo,
+        currency: s.currency,
         isPopular: s.isPopular,
         doctorIds: s.doctors.map((d) => d.doctorId),
       })),

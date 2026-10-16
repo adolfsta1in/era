@@ -4,7 +4,7 @@ import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import type { Locale } from "@/i18n/routing";
 import { getCatalog } from "@/lib/data";
-import { priceLabel } from "@/lib/i18n-format";
+import { servicePrice } from "@/lib/i18n-format";
 import { tr } from "@/lib/localized";
 
 const ITEMS = [
@@ -51,7 +51,7 @@ export async function Benefits({ locale }: { locale: Locale }) {
                         {i === 0 ? <Check className="size-3.5" /> : <span className="text-[0.7rem] font-bold">{i + 1}</span>}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium">{tr(s.name, locale)}</span>
-                      <span className="text-sm font-bold whitespace-nowrap">{priceLabel(tc, s.priceFrom)}</span>
+                      <span className="text-sm font-bold whitespace-nowrap">{servicePrice(tc, s)}</span>
                     </li>
                   ))}
                 </ul>

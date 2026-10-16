@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getCatalog, getDoctors, getServiceBySlug } from "@/lib/data";
 import { telHref } from "@/lib/format";
-import { priceLabel, yearsSince } from "@/lib/i18n-format";
+import { servicePrice, yearsSince } from "@/lib/i18n-format";
 import { getLocale } from "@/lib/locale";
 import { tr } from "@/lib/localized";
 import { localizedUrl } from "@/lib/seo/jsonld";
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/uslugi/[
   if (!found) return {};
   const tc = await getTranslations({ locale, namespace: "common" });
   const name = tr(found.service.name, locale);
-  const description = `${tr(found.service.shortDescription, locale)}. ${priceLabel(tc, found.service.priceFrom)}.`;
+  const description = `${tr(found.service.shortDescription, locale)}. ${servicePrice(tc, found.service)}.`;
   return {
     title: name,
     description,
@@ -143,7 +143,7 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/uslug
                   <Wallet className="size-4 text-primary" aria-hidden /> {t("price")}
                 </dt>
                 <dd className="mt-1 font-heading text-2xl font-bold text-ink">
-                  {priceLabel(tc, service.priceFrom, service.priceTo, "range")}
+                  {servicePrice(tc, service, "range")}
                 </dd>
               </div>
               <div>
@@ -156,13 +156,16 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/uslug
               </div>
             </dl>
             <div className="mt-6 grid gap-2">
-              <Button asChild size="lg">
-                <Link href={`/booking?service=${service.slug}`}>
-                  <CalendarCheck /> {tcta("bookService")}
-                </Link>
-              </Button>
+              {/* Без врача онлайн-записи на услугу нет — тогда главная кнопка «позвонить». */}
+              {serviceDoctors.length > 0 && (
+                <Button asChild size="lg">
+                  <Link href={`/booking?service=${service.slug}`}>
+                    <CalendarCheck /> {tcta("bookService")}
+                  </Link>
+                </Button>
+              )}
               {phone && (
-                <Button asChild size="lg" variant="outline">
+                <Button asChild size="lg" variant={serviceDoctors.length > 0 ? "outline" : "default"}>
                   <a href={telHref(phone)}>
                     <Phone /> {phone}
                   </a>
@@ -187,7 +190,7 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/uslug
                     name={tr(s.name, locale)}
                     description={tr(s.shortDescription, locale)}
                     duration={tc("durationShort", { count: s.durationMin })}
-                    price={priceLabel(tc, s.priceFrom)}
+                    price={servicePrice(tc, s)}
                   />
                 </li>
               ))}
@@ -208,11 +211,11 @@ export default async function ServicePage({ params }: PageProps<"/[locale]/uslug
           areaServed: { "@type": "City", name: "Бишкек" },
           offers: {
             "@type": "Offer",
-            priceCurrency: "KGS",
+            priceCurrency: service.currency,
             price: service.priceFrom,
             priceSpecification: {
               "@type": "PriceSpecification",
-              priceCurrency: "KGS",
+              priceCurrency: service.currency,
               minPrice: service.priceFrom,
               ...(service.priceTo ? { maxPrice: service.priceTo } : {}),
             },

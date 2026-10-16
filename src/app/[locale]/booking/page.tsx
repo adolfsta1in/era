@@ -6,7 +6,7 @@ import { BookingWizard, type WizardData } from "@/components/booking/wizard";
 import { WizardSkeleton } from "@/components/booking/wizard-skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { getCatalog, getDoctors } from "@/lib/data";
-import { priceLabel, yearsSince } from "@/lib/i18n-format";
+import { servicePrice, yearsSince } from "@/lib/i18n-format";
 import { getLocale } from "@/lib/locale";
 import { tr } from "@/lib/localized";
 import { pageAlternates } from "@/lib/seo/metadata";
@@ -46,7 +46,7 @@ export default async function BookingPage() {
         description: tr(s.shortDescription, locale),
         durationMin: s.durationMin,
         durationLabel: tc("durationShort", { count: s.durationMin }),
-        priceLabel: priceLabel(tc, s.priceFrom),
+        priceLabel: servicePrice(tc, s),
         doctorIds: s.doctorIds,
       })),
     doctors: doctors.map((d) => ({

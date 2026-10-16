@@ -48,6 +48,7 @@ export default async function ServiceEditPage({ params }: PageProps<"/admin/serv
           durationMin: service.durationMin,
           priceFrom: service.priceFrom,
           priceTo: service.priceTo,
+          currency: service.currency,
           isPopular: service.isPopular,
           isActive: service.isActive,
           doctorIds: service.doctors.map((d) => d.doctorId),

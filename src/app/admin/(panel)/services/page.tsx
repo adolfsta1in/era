@@ -6,7 +6,7 @@ import { CategoryManager } from "@/components/admin/services/category-manager";
 import { ServiceSort } from "@/components/admin/services/service-sort";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
-import { formatNumber } from "@/lib/format";
+import { adminPrice } from "@/lib/i18n-format";
 import { asLocalized, tr } from "@/lib/localized";
 
 export const metadata: Metadata = { title: "Услуги и цены" };
@@ -58,7 +58,7 @@ export default async function ServicesAdminPage() {
                           </span>
                         </Link>
                         <span className="text-right text-sm font-semibold whitespace-nowrap text-ink">
-                          от {formatNumber(s.priceFrom)} сом
+                          {adminPrice(s.priceFrom, s.currency)}
                         </span>
                       </li>
                     );

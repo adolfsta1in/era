@@ -49,7 +49,7 @@ export function filtersToWhere(f: AppointmentFilters): Prisma.AppointmentWhereIn
 }
 
 export const appointmentInclude = {
-  service: { select: { id: true, name: true, durationMin: true, priceFrom: true } },
+  service: { select: { id: true, name: true, durationMin: true, priceFrom: true, currency: true } },
   doctor: { select: { id: true, name: true, slug: true } },
 } satisfies Prisma.AppointmentInclude;
 

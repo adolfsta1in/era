@@ -47,6 +47,8 @@
   "common": {
     "priceFrom": "{price} сомдон баштап",
     "priceRange": "{from} – {to} сом",
+    "priceFromUsd": "{price} $ баштап",
+    "priceRangeUsd": "{from} – {to} $",
     "som": "сом",
     "minutes": "{count} мүнөт",
     "durationShort": "{count} мүн",

@@ -25,6 +25,7 @@ export async function saveService(_: FormState, fd: FormData): Promise<FormState
   const durationMin = int(fd, "durationMin");
   const priceFrom = int(fd, "priceFrom");
   const priceTo = str(fd, "priceTo") ? int(fd, "priceTo") : null;
+  const currency = str(fd, "currency") === "USD" ? "USD" : "KGS";
   const categoryId = str(fd, "categoryId");
   const doctorIds = fd.getAll("doctorIds").map(String);
 
@@ -46,6 +47,7 @@ export async function saveService(_: FormState, fd: FormData): Promise<FormState
     durationMin,
     priceFrom,
     priceTo,
+    currency,
     categoryId,
     isPopular: bool(fd, "isPopular"),
     isActive: bool(fd, "isActive"),
