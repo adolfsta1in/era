@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { formatDateLong, formatDateShort, formatTime, toDateKey } from "@/lib/time";
 import { cn } from "@/lib/utils";
-import { normalizeKgPhone } from "@/lib/validators/phone";
+import { isBlankPhone, normalizeKgPhone } from "@/lib/validators/phone";
 
 type Option = { id: string; name: string };
 type ServiceOption = Option & { doctorIds: string[]; durationMin: number };
@@ -62,7 +62,7 @@ export function NewAppointmentForm({
     if (!serviceId) errs.service = "Выберите услугу";
     if (!start) errs.start = "Выберите время";
     if (name.trim().length < 2) errs.name = "Укажите имя";
-    if (!normalizeKgPhone(phone)) errs.phone = "Номер полностью: +996 XXX XXX XXX";
+    if (!isBlankPhone(phone) && !normalizeKgPhone(phone)) errs.phone = "Номер полностью: +996 XXX XXX XXX — или оставьте пустым";
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
@@ -178,7 +178,7 @@ export function NewAppointmentForm({
         </div>
         <div>
           <label htmlFor="adm-phone" className={label}>
-            Телефон
+            Телефон <span className="font-normal text-muted-foreground">(необязательно)</span>
           </label>
           <IMaskInput
             id="adm-phone"

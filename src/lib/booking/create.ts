@@ -11,8 +11,8 @@ import { cellStarts } from "../slots/cells";
 import { isSlotAvailable, pickLeastLoadedDoctor } from "../slots/engine";
 import { ACTIVE_STATUSES, doctorsForService, findSlots, getBookingSettings, loadAvailability } from "../slots/service";
 import { addDays, toDateKey, zonedToUtc } from "../time";
-import { bookingSchema } from "../validators/booking";
-import { normalizeKgPhone } from "../validators/phone";
+import { adminBookingSchema, bookingSchema } from "../validators/booking";
+import { isBlankPhone, normalizeKgPhone } from "../validators/phone";
 
 export type BookingConfirmation = {
   code: string;
@@ -60,14 +60,16 @@ type Options = {
  *    на пересекающееся время упадёт на уникальном ограничении БД (P2002).
  */
 export async function createAppointment(raw: unknown, opts: Options): Promise<BookingResult> {
-  const parsed = bookingSchema.safeParse(raw);
+  // Из админки телефон необязателен; с сайта — обязателен.
+  const parsed = (opts.trusted ? adminBookingSchema : bookingSchema).safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] ??= issue.message;
     return { ok: false, error: "VALIDATION", fieldErrors };
   }
   const input = parsed.data;
-  const phone = normalizeKgPhone(input.phone)!;
+  // Пустая строка — номера нет (только для записи из админки, см. adminBookingSchema).
+  const phone = isBlankPhone(input.phone) ? "" : normalizeKgPhone(input.phone)!;
   const ip = opts.trusted ? undefined : await clientIp();
 
   if (!opts.trusted) {

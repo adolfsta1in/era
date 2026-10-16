@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizeKgPhone } from "./phone";
+import { isBlankPhone, normalizeKgPhone } from "./phone";
 
 /**
  * Схема формы контактов в мастере записи. Сообщения об ошибках — ключи
@@ -26,3 +26,8 @@ export const bookingSchema = contactSchema.extend({
 });
 
 export type BookingInput = z.input<typeof bookingSchema>;
+
+/** Запись из админки: телефон можно не указывать (пациент пришёл без номера, записали по звонку и т.п.). */
+export const adminBookingSchema = bookingSchema.extend({
+  phone: z.string().refine((v) => isBlankPhone(v) || normalizeKgPhone(v) !== null, "phoneInvalid"),
+});

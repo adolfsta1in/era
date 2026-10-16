@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatKgPhone, normalizeKgPhone } from "@/lib/validators/phone";
+import { formatKgPhone, isBlankPhone, normalizeKgPhone } from "@/lib/validators/phone";
 
 describe("телефон +996", () => {
   it.each([
@@ -18,5 +18,15 @@ describe("телефон +996", () => {
 
   it("форматирует для отображения", () => {
     expect(formatKgPhone("+996555123456")).toBe("+996 555 123 456");
+  });
+});
+
+describe("пустой телефон (запись из админки)", () => {
+  it.each(["", "   ", "+996 (___) ___-___", "+996"])("«%s» — номер не введён", (input) => {
+    expect(isBlankPhone(input)).toBe(true);
+  });
+
+  it.each(["+996 (555) 12-34-56", "+996 (5", "0555"])("«%s» — номер начали вводить", (input) => {
+    expect(isBlankPhone(input)).toBe(false);
   });
 });

@@ -132,9 +132,11 @@ export default async function DashboardPage() {
                       {formatDateLong(a.startAt, "ru").split(", ")[1]}, {formatTime(a.startAt)}
                     </p>
                   </div>
-                  <Button asChild size="sm" variant="soft">
-                    <a href={`tel:${a.patientPhone}`}>{formatKgPhone(a.patientPhone)}</a>
-                  </Button>
+                  {a.patientPhone && (
+                    <Button asChild size="sm" variant="soft">
+                      <a href={`tel:${a.patientPhone}`}>{formatKgPhone(a.patientPhone)}</a>
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>

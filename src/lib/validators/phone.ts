@@ -18,3 +18,9 @@ export function formatKgPhone(e164: string): string {
   if (d.length !== 12) return e164;
   return `+${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 9)} ${d.slice(9)}`;
 }
+
+/** Номер не введён: пустая строка или пустая маска «+996 (___) ___-___». */
+export function isBlankPhone(input: string | null | undefined): boolean {
+  const digits = (input ?? "").replace(/\D/g, "");
+  return digits === "" || digits === "996";
+}

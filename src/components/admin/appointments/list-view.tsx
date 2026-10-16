@@ -49,10 +49,14 @@ export function ListView({ appointments }: { appointments: AdminAppointment[] })
                       <Link href={`/admin/appointments/${a.id}`} className="block truncate font-semibold text-ink hover:text-primary">
                         {a.patientName}
                       </Link>
-                      <a href={`tel:${a.patientPhone}`} className="mt-0.5 inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
-                        <Phone className="size-3.5" aria-hidden />
-                        {formatKgPhone(a.patientPhone)}
-                      </a>
+                      {a.patientPhone ? (
+                        <a href={`tel:${a.patientPhone}`} className="mt-0.5 inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
+                          <Phone className="size-3.5" aria-hidden />
+                          {formatKgPhone(a.patientPhone)}
+                        </a>
+                      ) : (
+                        <span className="mt-0.5 block text-sm text-muted-foreground">Без телефона</span>
+                      )}
                       {a.comment && (
                         <p className="mt-1 flex gap-1 text-xs text-muted-foreground">
                           <MessageSquare className="mt-0.5 size-3 shrink-0" aria-hidden />

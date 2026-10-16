@@ -42,7 +42,16 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
     ["Услуга", `${tr(a.service.name, "ru")} · от ${formatNumber(a.service.priceFrom)} сом`],
     ["Врач", tr(a.doctor.name, "ru")],
     ["Пациент", a.patientName],
-    ["Телефон", <a key="p" href={`tel:${a.patientPhone}`} className="text-primary hover:underline">{formatKgPhone(a.patientPhone)}</a>],
+    [
+      "Телефон",
+      a.patientPhone ? (
+        <a key="p" href={`tel:${a.patientPhone}`} className="text-primary hover:underline">
+          {formatKgPhone(a.patientPhone)}
+        </a>
+      ) : (
+        "—"
+      ),
+    ],
     ["Комментарий", a.comment || "—"],
     ["Источник", a.source === "admin" ? "Админка" : `Сайт (${a.locale === "ky" ? "кыргызская" : "русская"} версия)`],
     ["Номер записи", a.publicCode],
@@ -74,16 +83,20 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
           ))}
         </dl>
         <div className="flex flex-wrap gap-2 border-t p-5 sm:p-6">
-          <Button asChild>
-            <a href={`tel:${a.patientPhone}`}>
-              <Phone /> Позвонить
-            </a>
-          </Button>
-          <Button asChild variant="outline">
-            <a href={whatsappHref(a.patientPhone, `Здравствуйте, ${a.patientName}! Это клиника — подтверждаем вашу запись на ${formatDateShort(a.startAt)} в ${formatTime(a.startAt)}.`)} target="_blank" rel="noopener noreferrer">
-              <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp
-            </a>
-          </Button>
+          {a.patientPhone && (
+            <>
+              <Button asChild>
+                <a href={`tel:${a.patientPhone}`}>
+                  <Phone /> Позвонить
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href={whatsappHref(a.patientPhone, `Здравствуйте, ${a.patientName}! Это клиника — подтверждаем вашу запись на ${formatDateShort(a.startAt)} в ${formatTime(a.startAt)}.`)} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp
+                </a>
+              </Button>
+            </>
+          )}
           {canReschedule && (
             <RescheduleForm
               key={`${a.startAt.toISOString()}-${a.doctorId}`}
