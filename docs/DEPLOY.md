@@ -41,7 +41,7 @@ Supabase → проект **MySkin** → кнопка **Connect** (вверху)
 | --- | --- |
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | из шага 1 |
 | `SITE_URL` | адрес сайта без слэша, например `https://era.vercel.app` |
-| `ADMIN_PASSWORD` | пароль админки — **сложный**, не `admin123` |
+| `ADMIN_PASSWORD` | первый пароль админки — **сложный**, не `admin123`. Потом пароль меняется в админке → Настройки → «Пароль админки» |
 | `SESSION_SECRET` | случайная строка: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 
 `DATABASE_POOL_MAX` на Vercel **не задавать** — он только для локальной разработки.
@@ -64,3 +64,12 @@ npm run dev
 **Никогда не запускайте `npm run db:seed` со строкой Supabase** — он удалит все записи пациентов.
 
 Тариф Vercel **Hobby** официально только для некоммерческих проектов; для сайта клиники правильнее **Pro**.
+
+## Пароль админки
+
+Пароль меняется в админке: **Настройки → «Пароль админки»** (нужен текущий пароль). Новый пароль хранится в
+базе как хэш (таблица `AdminCredential`), `ADMIN_PASSWORD` в Vercel после этого больше не используется.
+После смены на этом устройстве вход сохраняется, на остальных (телефон, программа на ПК) — войти заново.
+
+**Забыли пароль:** Supabase → MySkin → SQL Editor → `delete from "AdminCredential";` — снова заработает
+`ADMIN_PASSWORD` из Vercel (Settings → Environment Variables; при необходимости поменяйте его и сделайте Redeploy).

@@ -21,7 +21,7 @@ export default async function proxy(request: NextRequest) {
     const response = NextResponse.next();
     // Скользящая сессия: раз в сутки выдаём новую cookie на 60 дней — пароль не спрашивается снова.
     if (Date.now() / 1000 - session.iat > SESSION_RENEW_AFTER) {
-      response.cookies.set(SESSION_COOKIE, await signSession(), SESSION_COOKIE_OPTIONS);
+      response.cookies.set(SESSION_COOKIE, await signSession(session.pv), SESSION_COOKIE_OPTIONS);
     }
     return response;
   }

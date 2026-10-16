@@ -1,16 +1,18 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { checkPassword, endSession, startSession } from "@/lib/auth/session";
+import { checkPassword } from "@/lib/auth/credentials";
+import { endSession, startSession } from "@/lib/auth/session";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export type LoginState = { error?: "invalid" | "rate" | "config" };
 
 export async function login(_: LoginState, formData: FormData): Promise<LoginState> {
-  if (!process.env.ADMIN_PASSWORD || !process.env.SESSION_SECRET) return { error: "config" };
+  // ADMIN_PASSWORD нужен только пока пароль не сменили в «Настройках» (тогда он хранится в базе).
+  if (!process.env.SESSION_SECRET) return { error: "config" };
   const ip = await clientIp();
   if (!(await rateLimit(`login:${ip}`, 10, 15 * 60_000))) return { error: "rate" };
-  if (!checkPassword(String(formData.get("password") ?? ""))) return { error: "invalid" };
+  if (!(await checkPassword(String(formData.get("password") ?? "")))) return { error: "invalid" };
 
   await startSession();
   const next = String(formData.get("next") ?? "");

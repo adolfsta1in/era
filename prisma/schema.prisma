@@ -218,3 +218,11 @@ model BeforeAfterCase {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+/// Пароль админки, заданный в «Настройках» (хэш scrypt). Пока строки нет — действует ADMIN_PASSWORD из окружения.
+/// Забыли пароль — удалите строку (`delete from "AdminCredential"`), снова заработает ADMIN_PASSWORD.
+model AdminCredential {
+  id           Int      @id @default(1)
+  passwordHash String
+  updatedAt    DateTime @updatedAt
+}

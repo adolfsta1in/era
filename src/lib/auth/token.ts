@@ -18,20 +18,22 @@ function getKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function signSession(): Promise<string> {
-  return new SignJWT({ role: "admin" })
+/** pv — «версия пароля» (см. password.ts): после смены пароля сессии с прежней версией не действуют. */
+export async function signSession(pv: string): Promise<string> {
+  return new SignJWT({ role: "admin", pv })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE}s`)
     .sign(getKey());
 }
 
-/** Данные действующей сессии (iat — время выдачи, сек) или null. */
-export async function readSession(token: string | undefined): Promise<{ iat: number } | null> {
+/** Данные подписанной сессии (iat — время выдачи, сек; pv — версия пароля) или null. */
+export async function readSession(token: string | undefined): Promise<{ iat: number; pv: string } | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, getKey(), { algorithms: ["HS256"] });
-    return payload.role === "admin" ? { iat: payload.iat ?? 0 } : null;
+    // Сессии, выданные до появления смены пароля, — без pv: считаем их выданными под ADMIN_PASSWORD.
+    return payload.role === "admin" ? { iat: payload.iat ?? 0, pv: typeof payload.pv === "string" ? payload.pv : "env" } : null;
   } catch {
     return null;
   }

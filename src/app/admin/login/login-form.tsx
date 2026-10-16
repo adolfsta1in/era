@@ -10,7 +10,7 @@ import { login, type LoginState } from "../actions";
 const MESSAGES = {
   invalid: "Неверный пароль",
   rate: "Слишком много попыток. Подождите 15 минут.",
-  config: "Не заданы ADMIN_PASSWORD и SESSION_SECRET в .env",
+  config: "Не задан SESSION_SECRET в настройках сервера",
 };
 
 export function LoginForm() {
