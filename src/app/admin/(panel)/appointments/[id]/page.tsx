@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { whatsappHref } from "@/lib/format";
 import { adminPrice } from "@/lib/i18n-format";
 import { tr } from "@/lib/localized";
+import { getClinic } from "@/lib/settings";
 import { formatDateLong, formatDateShort, formatTime, toDateKey } from "@/lib/time";
 import { formatKgPhone } from "@/lib/validators/phone";
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = { title: "Запись" };
 
 export default async function AppointmentPage({ params }: PageProps<"/admin/appointments/[id]">) {
   const { id } = await params;
-  const a = await db.appointment.findUnique({ where: { id }, include: appointmentInclude });
+  const [a, clinic] = await Promise.all([db.appointment.findUnique({ where: { id }, include: appointmentInclude }), getClinic()]);
   if (!a) notFound();
   const canReschedule = a.status === "NEW" || a.status === "CONFIRMED";
   const serviceDoctors = canReschedule
@@ -92,7 +93,7 @@ export default async function AppointmentPage({ params }: PageProps<"/admin/appo
                 </a>
               </Button>
               <Button asChild variant="outline">
-                <a href={whatsappHref(a.patientPhone, `Здравствуйте, ${a.patientName}! Это клиника — подтверждаем вашу запись на ${formatDateShort(a.startAt)} в ${formatTime(a.startAt)}.`)} target="_blank" rel="noopener noreferrer">
+                <a href={whatsappHref(a.patientPhone, `Здравствуйте, ${a.patientName}! Это клиника ${clinic.shortName} — подтверждаем вашу запись на ${formatDateShort(a.startAt)} в ${formatTime(a.startAt)}.`)} target="_blank" rel="noopener noreferrer">
                   <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp
                 </a>
               </Button>
